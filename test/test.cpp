@@ -1,13 +1,14 @@
+#include <algorithm>
 #include <vector>
 
 #include <gtest/gtest.h>
 
-#include "prefix_tree.hpp"
+#include "trie.hpp"
 
 class prefix_tree_test : public ::testing::Test
 {
 protected:
-    prefix_tree<int> t{{{"123", 123}, {"abc", 012}, {"abd", 013}, {"cds", 340}}};
+    trie<int> t{{"123", 123}, {"abc", 012}, {"abd", 013}, {"cds", 340}};
 };
 
 TEST_F(prefix_tree_test, ContainsTest)
@@ -32,12 +33,11 @@ TEST_F(prefix_tree_test, GetTest)
 TEST_F(prefix_tree_test, GetAllTest)
 {
     auto res = t.get_all("1");
-    EXPECT_EQ(res, (std::vector{"123"}));
+    EXPECT_EQ(res, (std::vector<std::string>{"123"}));
 
     res = t.get_all("ab");
-    EXPECT_EQ(res, (std::vector{"abc", "abd"}));
+    EXPECT_EQ(res, (std::vector<std::string>{"abc", "abd"}));
 
     res = t.get_all("");
-    EXPECT_EQ(res, (std::vector{"123", "abc", "abd", "cds"}));
-
+    EXPECT_EQ(res, (std::vector<std::string>{"123", "abc", "abd", "cds"}));
 }
