@@ -5,13 +5,13 @@
 
 #include "trie.hpp"
 
-class prefix_tree_test : public ::testing::Test
+class trie_test : public ::testing::Test
 {
 protected:
     trie<int> t{{"123", 123}, {"abc", 012}, {"abd", 013}, {"cds", 340}};
 };
 
-TEST_F(prefix_tree_test, ContainsTest)
+TEST_F(trie_test, ContainsTest)
 {
     EXPECT_TRUE(t.contains("123"));
     EXPECT_TRUE(t.contains("abc"));
@@ -22,7 +22,7 @@ TEST_F(prefix_tree_test, ContainsTest)
     EXPECT_FALSE(t.contains("cda"));
 }
 
-TEST_F(prefix_tree_test, GetTest)
+TEST_F(trie_test, GetTest)
 {
     EXPECT_EQ(t.get("123"), 123);
     EXPECT_EQ(t.get("abc"), 012);
@@ -30,7 +30,7 @@ TEST_F(prefix_tree_test, GetTest)
     EXPECT_EQ(t.get("cds"), 340);
 }
 
-TEST_F(prefix_tree_test, GetAllTest)
+TEST_F(trie_test, GetAllTest)
 {
     auto res = t.get_all("1");
     EXPECT_EQ(res, (std::vector<std::string>{"123"}));
