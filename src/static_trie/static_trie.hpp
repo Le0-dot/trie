@@ -5,7 +5,7 @@
 #include <ranges>
 
 #include "static_trie_types.hpp"
-#include "static_trie_helper.hpp"
+#include "static_trie_helpers.hpp"
 
 template<typename T, size_t N>
 class static_trie 
@@ -14,30 +14,28 @@ class static_trie
 
 public:
     using key_t = static_trie_types::key_t;
-    using pair_t = static_trie_types::pair_t<T>;
-    using storage_t = static_trie_types::storage_t<node, TODO>;
-    using value_storage_t = static_trie_types::value_storage_t<T, N>;
+    using keys_t = static_trie_types::keys_t<N>;
+    using storage_t = static_trie_types::storage_t<node, N>;
+    using values_t = static_trie_types::values_t<T, N>;
 
 private:
     struct node
     {
-	typename storage_t::size_type left;
-	typename storage_t::size_type right;
+	typename storage_t::iterator left;
+	typename storage_t::iterator right;
+	typename values_t::iterator value;
 	char character;
-
-	// Check if has value that is pointed by value_index
-	bool has_value() { return left != 0 && right == 0; }
     };
 
 private:
-    const storage_t storage;
-    const value_storage_t value_storage;
+    const std::array<std::string_view, N> storage;
+    const std::array<T, N> _values;
 
 public:
     // input initializer_list should be sorted, otherwise Undefined Behaviour
-    constexpr static_trie(std::initializer_list<pair_t>&& in) 
+    constexpr static_trie(const keys_t& keys, values_t&& values) 
 	: storage{}
-	, value_storage{static_trie_helpers::create_value_storage<T, N>(in)}
+	, _values{std::forward<values_t&&>(values)}
     {
 //	storage.emplace_back(0, 0, '\0', {});
 //	if(std::size(std::begin(in)->first) == 0)

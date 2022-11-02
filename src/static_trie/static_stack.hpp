@@ -6,13 +6,14 @@
 #include <algorithm>
 
 template<typename T, std::size_t N>
-class static_stack : public std::stack<T, std::array<T, N>>
+class static_stack
 {
 protected:
+    std::array<T, N> container{};
     std::size_t _size{0};
 
 public:
-    constexpr auto top() const { return this->c.at(_size - 1); }
+    constexpr auto top() const { return container.at(_size - 1); }
 
     constexpr bool empty() const noexcept { return !_size; }
 
@@ -22,20 +23,20 @@ public:
 
     constexpr void push(const T& value)
     {
-        this->c.at(_size) = value;
+        container.at(_size) = value;
 	++_size;
     }
 
     constexpr void push(T&& value)
     {
-        this->c.at(_size) = std::move(value);
+        container.at(_size) = std::move(value);
 	++_size;
     }
 
     template<typename... Args>
     constexpr void emplace(Args&&... args)
     {
-        auto *pointer = &this->c.at(_size);
+        auto *pointer = &container.at(_size);
         std::construct_at(pointer, std::forward<Args>(args)...);
 	++_size;
     }
@@ -53,17 +54,17 @@ public:
 
     constexpr void swap(static_stack<T, N>& o) noexcept
     {
-        std::swap(this->c, o.c);
+        std::swap(container, o.container);
         std::swap(_size, o._size);
     }
 
     constexpr auto begin() noexcept
     { 
-        return this->c.begin();
+        return container.begin();
     }
 
     constexpr auto end() noexcept
     {
-        return this->c.begin() + std::min(_size, N);
+        return container.begin() + std::min(_size, N);
     }
 };

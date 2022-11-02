@@ -8,13 +8,13 @@ namespace static_trie_types {
 
     using key_t = std::string_view;
 
-    template<typename T>
-    using pair_t = std::pair<key_t, T>;
+    template<std::size_t N>
+    using keys_t = std::array<key_t, N>;
 
-    template<typename Node, size_t size>
-    using storage_t = std::array<Node, size>;
+    template<typename Node, std::size_t N>
+    using storage_t = std::array<Node, N>;
 
-    template<typename T, size_t size>
-    using value_storage_t = std::array<T, size>;
+    template<typename T, std::size_t N>
+    using values_t = std::array<T, N>;
 
 }
