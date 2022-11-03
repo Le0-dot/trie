@@ -2,7 +2,7 @@
 
 #include <string_view>
 #include <array>
-#include <utility>
+#include <memory>
 
 namespace static_trie_types {
 
