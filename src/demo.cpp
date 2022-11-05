@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "trie.hpp"
+#include "trie/trie.hpp"
 
 int main()
 {
     using namespace std;
 
-    trie<int> f{{"abc", 123}, {"bca", 431}, {"cba", 234}, {"abz", 987}, {"ab", 12345678}};
+    trie::trie<int> f{{"abc", 123}, {"bca", 431}, {"cba", 234}, {"abz", 987}, {"ab", 12345678}};
 
     cout << boolalpha << f.contains("abc") << ' ' << f.contains("zxc") << '\n';
     cout << f.get("abc") << ' ' << f.get("bca") << '\n';

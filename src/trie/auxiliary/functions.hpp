@@ -1,81 +1,31 @@
-#pragma once
-
-#include <algorithm>
-#include <bits/ranges_base.h>
-#include <initializer_list>
 #include <ranges>
+#include <algorithm>
 #include <functional>
-#include <concepts>
 
-#include "static_trie_types.hpp"
-#include "static_stack.hpp"
-#include "static_vector.hpp"
+#include "types.hpp"
+#include "concepts.hpp"
+#include "helpers.hpp"
 
-namespace static_trie_helpers 
+#include "data_structures/static_vector.hpp"
+#include "data_structures/static_stack.hpp"
+
+namespace trie::static_trie_auxiliary::functions 
 {
 
-    namespace { namespace types = static_trie_types; }
-
-
-    //////////////////////////////////////////////////////////////
-    ///                    Helper concepts                     ///
-    //////////////////////////////////////////////////////////////
-    
-    template<typename T>
-    concept sizable = requires { std::size(T{}); };
-
-    template<typename T>
-    concept is_string = 
-	std::same_as<T, std::string> ||
-	std::same_as<T, std::string_view> ||
-	std::same_as<T, const char*>;
-	
-    template<typename T>
-    concept has_value = std::default_initializable<T> && requires { T{}.value; };
-    
-    template<typename T>
-    concept has_left = std::default_initializable<T> && requires { T{}.left; };
-    
-    template<typename T>
-    concept has_right = std::default_initializable<T> && requires { T{}.right; };
-    
-    template<typename T>
-    concept has_character = std::default_initializable<T> && requires { T{}.character; };
-
-    template<typename T>
-    concept is_trie_node = 
-	has_value<T> &&
-	has_left<T> &&
-	has_right<T> &&
-	has_character<T>;
-
-
-    //////////////////////////////////////////////////////////////
-    ///                  Auxiliary functions                   ///
-    //////////////////////////////////////////////////////////////
-
-    template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
-    constexpr bool starts_with(Range1&& range1, Range2&& range2)
+    namespace 
     {
-	return std::mismatch(std::begin(range1), std::end(range1),
-		std::begin(range2), std::end(range2)).in2 == std::end(range2);
-    }
 
-    template<std::random_access_iterator Iter, std::sentinel_for<Iter> Sent>
-    constexpr bool iter_contains(Iter left, Sent right, Iter value)
-    {
-	return left <= value && value < right;
-    }
+	using trie::concepts::sizable;
+	using trie::concepts::is_trie_node;
+	using trie::concepts::is_string;
 
-    template<std::forward_iterator Iter, std::sentinel_for<Iter> Sent>
-    constexpr bool iter_contains(Iter left, Sent right, Iter value)
-    {
-	for(; left != right; ++left)
-	    if(left == value)
-		return true;
-	return false;
-    }
+	using trie::helpers::iter_contains;
+	using trie::helpers::starts_with;
 
+	using static_structures::static_vector;
+	using static_structures::static_stack;
+
+    }
 
     template<std::size_t MaxLength, std::ranges::forward_range Range>
     constexpr auto find_prefix(const Range& range, std::ranges::iterator_t<Range> current)
@@ -98,10 +48,6 @@ namespace static_trie_helpers
 	return v;
     }
 
-
-    //////////////////////////////////////////////////////////////
-    ///       Function that are to be used by static trie      ///
-    //////////////////////////////////////////////////////////////
 
     template<std::ranges::forward_range Range>
     [[nodiscard]] constexpr std::size_t max_length(Range&& range)
@@ -150,7 +96,7 @@ namespace static_trie_helpers
     [[nodiscard]] constexpr auto create_storage(const KeyRange& keys, const ValueRange& values)
     requires std::ranges::sized_range<KeyRange> && 
 	is_string<std::ranges::range_value_t<KeyRange>> &&
-	has_value<Node>
+	is_trie_node<Node>
     {
 	types::storage_t<Node, NodeNumber + 1> storage;
 

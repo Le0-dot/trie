@@ -2,9 +2,8 @@
 
 #include <string_view>
 #include <array>
-#include <memory>
 
-namespace static_trie_types {
+namespace trie::static_trie_auxiliary::types {
 
     using key_t = std::string_view;
 
