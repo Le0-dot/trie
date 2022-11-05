@@ -16,7 +16,7 @@ namespace static_structures
 	std::size_t _size{0};
 
     public:
-	constexpr auto at(std::size_t i) const
+	constexpr const T& at(std::size_t i) const
 	{
 	    if(i < _size)
 		return container.at(i);
@@ -24,21 +24,33 @@ namespace static_structures
 		throw std::out_of_range{"static_vector: out of bound"};
 	}
 
-	constexpr auto operator[](std::size_t i) const noexcept { return container[i]; }
+	constexpr const T& operator[](std::size_t i) const noexcept { return container[i]; }
 
-	constexpr auto begin() noexcept { return container.begin(); }
+	constexpr const T& front() const { return this->at(0); }
 
-	constexpr auto end() noexcept { return container.begin() + std::min(_size, N); }
+	constexpr const T& back() const { return this->at(_size - 1); }
 
-	constexpr auto cbegin() const noexcept { return container.begin(); }
+	constexpr T& at(std::size_t i)
+	{
+	    if(i < _size)
+		return container.at(i);
+	    else
+		throw std::out_of_range{"static_vector: out of bound"};
+	}
 
-	constexpr auto cend() const noexcept { return container.begin() + std::min(_size, N); }
+	constexpr T& operator[](std::size_t i) noexcept { return container[i]; }
+
+	constexpr T& front() { return this->at(0); }
+
+	constexpr T& back() { return this->at(_size - 1); }
+
 
 	constexpr std::size_t size() const noexcept { return _size; }
 
 	constexpr static std::size_t capacity() noexcept { return N; }
 
 	constexpr bool empty() const noexcept { return !_size; }
+
 
 	constexpr void clear() noexcept { _size = 0; }
 
@@ -80,6 +92,23 @@ namespace static_structures
 	    std::swap(container, o.container);
 	    std::swap(_size, o._size);
 	}
+
+
+	constexpr auto begin() noexcept { return container.begin(); }
+
+	constexpr auto end() noexcept { return container.begin() + std::min(_size, N); }
+
+	constexpr auto cbegin() const noexcept { return container.cbegin(); }
+
+	constexpr auto cend() const noexcept { return container.cbegin() + std::min(_size, N); }
+
+	constexpr auto rbegin() noexcept { return container.rbegin(); }
+
+	constexpr auto rend() noexcept { return container.rbegin() + std::min(_size, N); }
+
+	constexpr auto crbegin() const noexcept { return container.crbegin(); }
+
+	constexpr auto crend() const noexcept { return container.crbegin() + std::min(_size, N); }
 
     };
 

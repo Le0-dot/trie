@@ -17,7 +17,9 @@ namespace static_structures
 	static_vector<T, N> v{};
 
     public:
-	constexpr auto top() const { return v.at(v.size() - 1); }
+	constexpr const T& top() const { return v.back(); }
+
+	constexpr T& top() { return v.back(); }
 
 	constexpr bool empty() const noexcept { return v.empty(); }
 

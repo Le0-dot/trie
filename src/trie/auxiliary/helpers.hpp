@@ -10,7 +10,7 @@ namespace trie::helpers
     template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
     constexpr bool starts_with(Range1&& range1, Range2&& range2)
     {
-	return std::mismatch(std::begin(range1), std::end(range1),
+	return std::ranges::mismatch(std::begin(range1), std::end(range1),
 		std::begin(range2), std::end(range2)).in2 == std::end(range2);
     }
 

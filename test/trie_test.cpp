@@ -3,12 +3,12 @@
 
 #include <gtest/gtest.h>
 
-#include "trie.hpp"
+#include "trie/trie.hpp"
 
 class trie_test : public ::testing::Test
 {
 protected:
-    trie<int> t{{"123", 123}, {"abc", 012}, {"abd", 013}, {"cds", 340}};
+    trie::trie<int> t{{"123", 123}, {"abc", 012}, {"abd", 013}, {"cds", 340}};
 };
 
 TEST_F(trie_test, ContainsTest)

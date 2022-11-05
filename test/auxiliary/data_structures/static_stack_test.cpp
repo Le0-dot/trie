@@ -4,14 +4,16 @@
 
 #include <gtest/gtest.h>
 
-#include "static_trie/static_stack.hpp"
+#include "trie/auxiliary/data_structures/static_stack.hpp"
 
-struct test_struct
+using namespace static_structures;
+
+struct stack_test_struct
 {
     int a, b;
 };
 
-bool operator==(const test_struct& ts1, const test_struct& ts2)
+bool operator==(const stack_test_struct& ts1, const stack_test_struct& ts2)
 {
     return (ts1.a == ts2.a) && (ts1.b == ts2.b);
 }
@@ -19,8 +21,8 @@ bool operator==(const test_struct& ts1, const test_struct& ts2)
 class static_stack_test : public ::testing::Test
 {
 protected:
-    const std::vector<test_struct> v{{1, 1}, {2, 2}, {3, 3}, {4, 4}};
-    static_stack<test_struct, 4> s;
+    const std::vector<stack_test_struct> v{{1, 1}, {2, 2}, {3, 3}, {4, 4}};
+    static_stack<stack_test_struct, 4> s;
 };
 
 
@@ -36,12 +38,16 @@ TEST_F(static_stack_test, AccessTest)
 
     EXPECT_FALSE(s.empty());
     EXPECT_EQ(s.size(), 1);
-    EXPECT_EQ(s.top(), (test_struct{1, 1}));
+    EXPECT_EQ(s.top(), (stack_test_struct{1, 1}));
+
+    s.top() = {2, 2};
+
+    EXPECT_EQ(s.top(), (stack_test_struct{2, 2}));
 }
 
 TEST_F(static_stack_test, GrowTest)
 {
-    const test_struct i = {1, 1};
+    const stack_test_struct i = {1, 1};
     EXPECT_NO_THROW(s.push(i));
     EXPECT_NO_THROW(s.push({2, 2}));
     EXPECT_NO_THROW(s.emplace(3, 3));
@@ -86,7 +92,7 @@ TEST_F(static_stack_test, RangeTest)
 
 TEST_F(static_stack_test, SwapTest)
 {
-    static_stack<test_struct, 4> s2;
+    static_stack<stack_test_struct, 4> s2;
 
     for(int i = 1; i <= s.capacity(); ++i)
 	s.emplace(i, i);
