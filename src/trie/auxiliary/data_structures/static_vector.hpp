@@ -101,6 +101,10 @@ namespace static_structures
 	constexpr auto cbegin() const noexcept { return container.cbegin(); }
 
 	constexpr auto cend() const noexcept { return container.cbegin() + std::min(_size, N); }
+	
+	constexpr auto begin() const noexcept { return cbegin(); }
+
+	constexpr auto end() const noexcept { return cend(); }
 
 	constexpr auto rbegin() noexcept { return container.rbegin(); }
 
@@ -109,6 +113,10 @@ namespace static_structures
 	constexpr auto crbegin() const noexcept { return container.crbegin(); }
 
 	constexpr auto crend() const noexcept { return container.crbegin() + std::min(_size, N); }
+
+	constexpr auto rbegin() const noexcept { return crbegin(); }
+
+	constexpr auto rend() const noexcept { return crend(); }
 
     };
 

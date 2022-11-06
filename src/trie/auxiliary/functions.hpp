@@ -1,3 +1,4 @@
+#include <iterator>
 #include <ranges>
 #include <algorithm>
 #include <functional>
@@ -9,6 +10,8 @@
 #include "data_structures/static_vector.hpp"
 #include "data_structures/static_stack.hpp"
 
+#include <iostream>
+
 namespace trie::static_trie_auxiliary::functions 
 {
 
@@ -19,7 +22,6 @@ namespace trie::static_trie_auxiliary::functions
 	using trie::concepts::is_trie_node;
 	using trie::concepts::is_string;
 
-	using trie::helpers::iter_contains;
 	using trie::helpers::starts_with;
 
 	using static_structures::static_vector;
@@ -28,20 +30,22 @@ namespace trie::static_trie_auxiliary::functions
     }
 
     template<std::size_t MaxLength, std::ranges::forward_range Range>
-    constexpr auto find_prefix(const Range& range, std::ranges::iterator_t<Range> current)
+    constexpr auto find_prefix(const Range& range, std::size_t current)
     requires is_trie_node<std::ranges::range_value_t<Range>>
     {
 	static_vector<char, MaxLength> v;
+	v.push_back('\0');
 
-	auto it = std::begin(range), desired = current;
-	while(it != std::end(range) && desired != std::begin(range)) {
-	    it = std::begin(range);
+	std::size_t it = 0, desired = current;
+	while(it < std::size(range) && desired != 0) {
+	    it = 0;
 	    do {
-		if(iter_contains(it->left, it->right, desired)) {
-		    v.push_back(desired->character);
+		if(range[it].left <= desired && desired < range[it].right) {
+		    v.push_back(range[desired].character);
 		    desired = it;
+		    break;
 		}
-	    } while(++it != std::end(range));
+	    } while(++it < std::size(range));
 	}
 
 	std::ranges::reverse(v);
@@ -66,13 +70,16 @@ namespace trie::static_trie_auxiliary::functions
     [[nodiscard]] constexpr std::size_t calculate_node_number(const Range& keys)
     requires std::ranges::sized_range<Range> && is_string<std::ranges::range_value_t<Range>>
     {
+	if(std::size(keys) == 1 && *std::begin(keys) == "")
+	    return 1;
+
 	if constexpr(!StackDepth)
 	    return 0;
 
 	static_stack<char, StackDepth> s;
 	
 	auto element = std::begin(keys);
-	std::size_t counter = 0;
+	std::size_t counter = 1;
 
 	while(true) {
 	    while(s.size() < element->size()) {
@@ -98,7 +105,7 @@ namespace trie::static_trie_auxiliary::functions
 	is_string<std::ranges::range_value_t<KeyRange>> &&
 	is_trie_node<Node>
     {
-	types::storage_t<Node, NodeNumber + 1> storage;
+	types::storage_t<Node, NodeNumber> storage;
 
 	auto value = std::begin(values);
 	auto node = std::begin(storage);
@@ -107,34 +114,35 @@ namespace trie::static_trie_auxiliary::functions
 	    return storage;
 
 	if(!std::begin(keys)->size())
-	    node->value = value;
+	    node->value = *value;
 	++node;
 
 	// Current and next level iterators
-	auto iteration_left = std::begin(keys), iteration_right = std::ranges::next(begin(keys));
+	auto iteration_left = std::begin(storage), iteration_right = std::ranges::next(begin(storage));
 	auto next_iteration_left = iteration_right, next_iteration_right = next_iteration_left;
 
 	for(std::size_t level = 0; level < MaxLength; ++level) {
 	    // For each parent in current level
-	    for(auto parent = iteration_left; parent != iteration_right; std::advance(parent)) {
-		auto prefix = find_prefix<MaxLength>(storage, parent);
+	    for(auto parent = iteration_left; parent != iteration_right; ++parent) {
+		auto prefix = find_prefix<MaxLength>(storage, std::distance(std::begin(storage), parent));
+		auto filter = [&prefix] (auto v) { return starts_with(v, prefix); };
 		// Iterate over the input values and take only those which are from this parent
-		for(const auto& key : keys | std::views::filter(std::bind(starts_with, std::placeholders::_1, prefix))) {
+		for(const auto& key : keys | std::views::filter(filter)) {
 		    // Check bounds of str
 		    if(level >= std::size(key))
 			continue;
 
-		    auto val = !(level + 1 - std::size(key)) ? value++ : std::end(values);
+		    std::size_t val = !(level + 1 - std::size(key)) ? std::distance(std::begin(values), value++) : 0;
 		    
 		    // Create new child
-		    *node = {std::end(storage), std::end(storage), key[level], val};
+		    *node = Node{std::size(storage), std::size(storage), val, key[level]};
 
 		    // Renew parent left and right indecies
-		    if(parent->left == std::end(storage))
-			parent->left = node;
-		    parent->right = ++node;
+		    if(parent->left == std::size(storage))
+			parent->left = std::distance(std::begin(storage), node);
+		    parent->right = std::distance(std::begin(storage), ++node);
 
-		    std::advance(next_iteration_right);
+		    ++next_iteration_right;
 		}
 	    }
 

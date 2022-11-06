@@ -21,11 +21,13 @@ namespace static_structures
 
 	constexpr T& top() { return v.back(); }
 
+
 	constexpr bool empty() const noexcept { return v.empty(); }
 
 	constexpr std::size_t size() const noexcept { return v.size(); }
 
 	constexpr std::size_t capacity() const noexcept { return v.capacity(); }
+
 
 	constexpr void push(const T& value) { v.push_back(value); }
 
@@ -43,9 +45,18 @@ namespace static_structures
 
 	constexpr void swap(static_stack<T, N>& o) noexcept { v.swap(o.v); }
 
+
 	constexpr auto begin() noexcept { return v.begin(); }
 
 	constexpr auto end() noexcept { return v.end(); }
+
+	constexpr auto cbegin() const noexcept { return v.cbegin(); }
+
+	constexpr auto cend() const noexcept { return v.cend(); }
+
+	constexpr auto begin() const noexcept { return cbegin(); }
+
+	constexpr auto end() const noexcept { return cend(); }
 
     };
 
