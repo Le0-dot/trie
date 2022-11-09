@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <ranges>
 
-
 namespace trie::helpers
 {
 
@@ -12,6 +11,12 @@ namespace trie::helpers
     {
 	return std::ranges::mismatch(std::begin(range1), std::end(range1),
 		std::begin(range2), std::end(range2)).in2 == std::end(range2);
+    }
+
+    template<std::ranges::forward_range Range>
+    constexpr std::size_t index_of(const Range& range, const typename std::ranges::range_value_t<Range>& value)
+    {
+	return std::distance(std::begin(range), std::ranges::find(range, value));
     }
 
 }
