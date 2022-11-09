@@ -11,12 +11,24 @@ namespace static_structures
     template<typename T, std::size_t N>
     class static_vector
     {
+    public:
+	using value_type = T;
+	using size_type = typename std::array<T, N>::size_type;
+	using difference_type = typename std::array<T, N>::difference_type;
+	using reference = value_type&;
+	using const_reference = const value_type&;
+	using rvalue_reference = value_type&&;
+	using iterator = typename std::array<T, N>::iterator;
+	using const_iterator = typename std::array<T, N>::const_iterator;
+	using reverse_iterator = typename std::array<T, N>::reverse_iterator;
+	using const_reverse_iterator = typename std::array<T, N>::const_reverse_iterator;
+
     private:
 	std::array<T, N> container{};
 	std::size_t _size{0};
 
     public:
-	constexpr const T& at(std::size_t i) const
+	constexpr const T& at(size_type i) const
 	{
 	    if(i < _size)
 		return container.at(i);
@@ -24,13 +36,13 @@ namespace static_structures
 		throw std::out_of_range{"static_vector: out of bound"};
 	}
 
-	constexpr const T& operator[](std::size_t i) const noexcept { return container[i]; }
+	constexpr const T& operator[](size_type i) const noexcept { return container[i]; }
 
 	constexpr const T& front() const { return this->at(0); }
 
 	constexpr const T& back() const { return this->at(_size - 1); }
 
-	constexpr T& at(std::size_t i)
+	constexpr T& at(size_type i)
 	{
 	    if(i < _size)
 		return container.at(i);
@@ -38,29 +50,29 @@ namespace static_structures
 		throw std::out_of_range{"static_vector: out of bound"};
 	}
 
-	constexpr T& operator[](std::size_t i) noexcept { return container[i]; }
+	constexpr T& operator[](size_type i) noexcept { return container[i]; }
 
 	constexpr T& front() { return this->at(0); }
 
 	constexpr T& back() { return this->at(_size - 1); }
 
 
-	constexpr std::size_t size() const noexcept { return _size; }
+	constexpr size_type size() const noexcept { return _size; }
 
-	constexpr static std::size_t capacity() noexcept { return N; }
+	constexpr static size_type capacity() noexcept { return N; }
 
 	constexpr bool empty() const noexcept { return !_size; }
 
 
 	constexpr void clear() noexcept { _size = 0; }
 
-	constexpr void push_back(const T& v) 
+	constexpr void push_back(const_reference v) 
 	{ 
 	    container.at(_size) = v;
 	    ++_size;
 	}
 
-	constexpr void push_back(T&& v)
+	constexpr void push_back(rvalue_reference v)
 	{
 	    container.at(_size) = std::move(v);
 	    ++_size;
@@ -80,12 +92,12 @@ namespace static_structures
 		--_size; 
 	}
 
-	constexpr void pop_back_n(std::size_t n) noexcept
+	constexpr void pop_back_n(size_type n) noexcept
 	{
 	    _size = (_size > n) ? _size - n : 0;
 	}
 
-	constexpr void resize(std::size_t n) { _size = n; }
+	constexpr void resize(size_type n) { _size = n; }
 
 	constexpr void swap(static_vector<T, N>& o)
 	{
@@ -93,30 +105,50 @@ namespace static_structures
 	    std::swap(_size, o._size);
 	}
 
+	constexpr iterator erase(iterator pos)
+	{
+	    if(!(this->begin() <= pos && pos < this->end()))
+		return this->end();
+	    std::ranges::copy(pos + 1, this->end(), pos);
+	    --_size;
+	    return pos + 1;
+	}
 
-	constexpr auto begin() noexcept { return container.begin(); }
+	constexpr iterator erase(iterator left, iterator right)
+	{
+	    if(!(this->begin() <= left && right <= this->end()))
+		return end();
+	    auto old_end = this->end();
+	    _size -= (right - left);
+	    if(right == old_end)
+		return this->end();
+	    return std::ranges::copy(right + 1, old_end, left).out;
+	}
 
-	constexpr auto end() noexcept { return container.begin() + std::min(_size, N); }
 
-	constexpr auto cbegin() const noexcept { return container.cbegin(); }
+	constexpr iterator begin() noexcept { return container.begin(); }
 
-	constexpr auto cend() const noexcept { return container.cbegin() + std::min(_size, N); }
+	constexpr iterator end() noexcept { return container.begin() + std::min(_size, N); }
+
+	constexpr const_iterator cbegin() const noexcept { return container.cbegin(); }
+
+	constexpr const_iterator cend() const noexcept { return container.cbegin() + std::min(_size, N); }
 	
-	constexpr auto begin() const noexcept { return cbegin(); }
+	constexpr const_iterator begin() const noexcept { return cbegin(); }
 
-	constexpr auto end() const noexcept { return cend(); }
+	constexpr const_iterator end() const noexcept { return cend(); }
 
-	constexpr auto rbegin() noexcept { return container.rbegin(); }
+	constexpr reverse_iterator rbegin() noexcept { return container.rbegin(); }
 
-	constexpr auto rend() noexcept { return container.rbegin() + std::min(_size, N); }
+	constexpr reverse_iterator rend() noexcept { return container.rbegin() + std::min(_size, N); }
 
-	constexpr auto crbegin() const noexcept { return container.crbegin(); }
+	constexpr const_reverse_iterator crbegin() const noexcept { return container.crbegin(); }
 
-	constexpr auto crend() const noexcept { return container.crbegin() + std::min(_size, N); }
+	constexpr const_reverse_iterator crend() const noexcept { return container.crbegin() + std::min(_size, N); }
 
-	constexpr auto rbegin() const noexcept { return crbegin(); }
+	constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
 
-	constexpr auto rend() const noexcept { return crend(); }
+	constexpr const_reverse_iterator rend() const noexcept { return crend(); }
 
     };
 
