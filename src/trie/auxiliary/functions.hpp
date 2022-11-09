@@ -10,8 +10,6 @@
 #include "data_structures/static_vector.hpp"
 #include "data_structures/static_stack.hpp"
 
-#include <iostream>
-
 namespace trie::static_trie_auxiliary::functions 
 {
 
@@ -23,6 +21,7 @@ namespace trie::static_trie_auxiliary::functions
 	using trie::concepts::is_string;
 
 	using trie::helpers::starts_with;
+	using trie::helpers::index_of;
 
 	using static_structures::static_vector;
 	using static_structures::static_stack;
@@ -34,7 +33,6 @@ namespace trie::static_trie_auxiliary::functions
     requires is_trie_node<std::ranges::range_value_t<Range>>
     {
 	static_vector<char, MaxLength> v;
-	v.push_back('\0');
 
 	std::size_t it = 0, desired = current;
 	while(it < std::size(range) && desired != 0) {
@@ -97,6 +95,15 @@ namespace trie::static_trie_auxiliary::functions
 
 	return counter;
     }
+    
+template<typename T, std::size_t N>
+std::ostream& operator<<(std::ostream& out, const static_structures::static_vector<T, N>& v)
+{
+    for(const auto& it: v)
+	out << it;
+    return out;
+}
+
 
     template<typename Node, std::size_t NodeNumber, std::size_t MaxLength,
 	std::ranges::forward_range KeyRange, std::ranges::forward_range ValueRange>
@@ -107,14 +114,16 @@ namespace trie::static_trie_auxiliary::functions
     {
 	types::storage_t<Node, NodeNumber> storage;
 
-	auto value = std::begin(values);
-	auto node = std::begin(storage);
-
 	if constexpr(!NodeNumber)
 	    return storage;
 
-	if(!std::begin(keys)->size())
-	    node->value = *value;
+	auto node = std::begin(storage);
+
+	// Initialize root node
+	node->left = std::size(storage);
+	node->right = std::size(storage);
+	node->value = (!std::begin(keys)->size()) ? 0 : std::size(values);
+	node->character = '\0';
 	++node;
 
 	// Current and next level iterators
@@ -124,19 +133,22 @@ namespace trie::static_trie_auxiliary::functions
 	for(std::size_t level = 0; level < MaxLength; ++level) {
 	    // For each parent in current level
 	    for(auto parent = iteration_left; parent != iteration_right; ++parent) {
+		// Find prefix of current parent
 		auto prefix = find_prefix<MaxLength>(storage, std::distance(std::begin(storage), parent));
-		auto filter = [&prefix] (auto v) { return starts_with(v, prefix); };
-		// Iterate over the input values and take only those which are from this parent
-		for(const auto& key : keys | std::views::filter(filter)) {
-		    // Check bounds of str
-		    if(level >= std::size(key))
-			continue;
+		// Define filter function
+		auto filter = [&prefix, level] (auto v) { return (level < std::size(v)) && starts_with(v, prefix); };
+		auto unique_projection = [level] (std::string_view s) { return s[level]; };
+		// Create and populate current iteration keys
+		static_vector<std::ranges::range_value_t<KeyRange>, NodeNumber> current_keys;
+		std::ranges::copy_if(keys, std::back_inserter(current_keys), filter);
+		const auto& [new_end, _] = std::ranges::unique(current_keys, {}, unique_projection);
+		current_keys.erase(new_end, std::end(current_keys));
 
-		    std::size_t val = !(level + 1 - std::size(key)) ? std::distance(std::begin(values), value++) : 0;
-		    
+		// Iterate over the input values and take only those which are from this parent
+		for(const auto& key : current_keys) {
+		    std::size_t val = (std::size(key) == level + 1) ? index_of(keys, key) : std::size(values);
 		    // Create new child
 		    *node = Node{std::size(storage), std::size(storage), val, key[level]};
-
 		    // Renew parent left and right indecies
 		    if(parent->left == std::size(storage))
 			parent->left = std::distance(std::begin(storage), node);

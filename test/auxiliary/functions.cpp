@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <gtest/gtest.h>
 
 #include "trie/auxiliary/data_structures/static_vector.hpp"
@@ -7,7 +5,81 @@
 
 using namespace trie::static_trie_auxiliary::functions;
 
-TEST(functions_test, MaxLength)
+struct test_node
+{
+    std::size_t left, right;
+    std::size_t value;
+    char character;
+
+    constexpr bool operator==(const test_node& o) const noexcept
+    {
+	return (left == o.left) && (right == o.right) && (value == o.value) && (character == o.character);
+    }
+};
+
+class functions_test : public ::testing::Test
+{
+protected:
+    static constexpr std::size_t max_size = 4;
+    static constexpr std::size_t node_number = 10;
+    static constexpr std::array<test_node, node_number> make_test_array()
+    {
+	// abc abd ave b cv
+	std::array<test_node, node_number> arr;
+	arr[9] = test_node{std::size(arr), std::size(arr), 2, 'e'};
+	arr[8] = test_node{std::size(arr), std::size(arr), 1, 'd'};
+	arr[7] = test_node{std::size(arr), std::size(arr), 0, 'c'};
+	arr[6] = test_node{std::size(arr), std::size(arr), 4, 'v'};
+	arr[5] = test_node{9, 10, 5, 'v'};
+	arr[4] = test_node{7, 9, 5, 'b'};
+	arr[3] = test_node{6, 7, 5, 'c'};
+	arr[2] = test_node{std::size(arr), std::size(arr), 3, 'b'};
+	arr[1] = test_node{4, 6, 5, 'a'};
+	arr[0] = test_node{1, 4, 5, '\0'};
+	return arr;
+    }
+    
+    static constexpr std::array<std::string_view, 5> make_keys()
+    {
+	using namespace std::string_view_literals;
+	return {"abc"sv, "abd"sv, "ave"sv, "b"sv, "cv"sv};
+    }
+
+    static constexpr std::array<int, 5> make_values()
+    {
+	return {1, 2, 3, 4, 5};
+    }
+
+    static constexpr std::array<test_node, node_number> make_intersect_test_array()
+    {
+	// abc abd ave b cv
+	std::array<test_node, node_number> arr;
+	arr[9] = test_node{std::size(arr), std::size(arr), 3, 'e'};
+	arr[8] = test_node{std::size(arr), std::size(arr), 2, 'd'};
+	arr[7] = test_node{std::size(arr), std::size(arr), 1, 'c'};
+	arr[6] = test_node{std::size(arr), std::size(arr), 6, 'v'};
+	arr[5] = test_node{9, 10, 7, 'v'};
+	arr[4] = test_node{7, 9, 0, 'b'};
+	arr[3] = test_node{6, 7, 5, 'c'};
+	arr[2] = test_node{std::size(arr), std::size(arr), 4, 'b'};
+	arr[1] = test_node{4, 6, 7, 'a'};
+	arr[0] = test_node{1, 4, 7, '\0'};
+	return arr;
+    }
+    
+    static constexpr std::array<std::string_view, 7> make_intersect_keys()
+    {
+	using namespace std::string_view_literals;
+	return {"ab"sv, "abc"sv, "abd"sv, "ave"sv, "b"sv, "c"sv, "cv"sv};
+    }
+
+    static constexpr std::array<int, 7> make_intersect_values()
+    {
+	return {1, 2, 3, 4, 5, 6, 7};
+    }
+};
+
+TEST_F(functions_test, MaxLength)
 {
     std::array<std::string_view, 3> a1{"a", "ab", "abc"};
     auto m1 = max_length(a1);
@@ -30,7 +102,7 @@ TEST(functions_test, MaxLength)
     EXPECT_EQ(m4, 0);
 }
 
-TEST(functions_test, MaxLengthConstexpr)
+TEST_F(functions_test, MaxLengthConstexpr)
 {
     constexpr std::array<std::string_view, 3> a1{"a", "ab", "abc"};
     constexpr auto m1 = max_length(a1);
@@ -53,7 +125,7 @@ TEST(functions_test, MaxLengthConstexpr)
     EXPECT_EQ(m4, 0);
 }
 
-TEST(functions_test, CalculateNodeNumber)
+TEST_F(functions_test, CalculateNodeNumber)
 {
     std::array<std::string_view, 3> a1{"abc", "abz", "acb"};
     auto s1 = calculate_node_number<3>(a1);
@@ -81,7 +153,7 @@ TEST(functions_test, CalculateNodeNumber)
     EXPECT_EQ(s5, 0);
 }
 
-TEST(functions_test, CalculateNodeNumberConstexpr)
+TEST_F(functions_test, CalculateNodeNumberConstexpr)
 {
     constexpr std::array<std::string_view, 3> a1{"abc", "abz", "acb"};
     constexpr std::size_t max1 = max_length(a1);
@@ -114,48 +186,20 @@ TEST(functions_test, CalculateNodeNumberConstexpr)
     EXPECT_EQ(s5, 0);
 }
 
-struct test_node
-{
-    std::size_t left, right;
-    char character;
-    int value;
-};
-
-constexpr std::size_t max_size = 4;
-
-constexpr std::array<test_node, 10> make_test_array()
-{
-    // ave abc abd b cv
-
-    std::array<test_node, 10> arr;
-    arr[9] = test_node{std::size(arr), std::size(arr), 'd'};
-    arr[8] = test_node{std::size(arr), std::size(arr), 'c'};
-    arr[7] = test_node{std::size(arr), std::size(arr), 'e'};
-    arr[6] = test_node{std::size(arr), std::size(arr), 'v'};
-    arr[5] = test_node{8, std::size(arr), 'b'};
-    arr[4] = test_node{7, 8, 'v'};
-    arr[3] = test_node{6, 7, 'c'};
-    arr[2] = test_node{std::size(arr), std::size(arr), 'b'};
-    arr[1] = test_node{4, 6, 'a'};
-    arr[0] = test_node{1, 4, '\0'};
-
-    return arr;
-}
-
-TEST(functions_test, FindPrefixTest)
+TEST_F(functions_test, FindPrefixTest)
 {
     auto arr = make_test_array();
 
-    std::vector res1 = {'a', 'v', 'e', '\0'};
-    std::vector res2 = {'a', 'b', 'c', '\0'};
-    std::vector res3 = {'a', 'b', 'd', '\0'};
-    std::vector res4 = {'c', 'v', '\0'};
-    std::vector res5 = {'a', 'v', '\0'};
-    std::vector res6 = {'a', 'b', '\0'};
-    std::vector res7 = {'b', '\0'};
-    std::vector res8 = {'c', '\0'};
-    std::vector res9 = {'a', '\0'};
-    std::vector res10 = {'\0'};
+    std::vector res1 = {'a', 'b', 'c'};
+    std::vector res2 = {'a', 'b', 'd'};
+    std::vector res3 = {'a', 'v', 'e'};
+    std::vector res4 = {'c', 'v'};
+    std::vector res5 = {'a', 'b'};
+    std::vector res6 = {'a', 'v'};
+    std::vector res7 = {'b'};
+    std::vector res8 = {'c'};
+    std::vector res9 = {'a'};
+    std::vector<char> res10 = {};
 
     EXPECT_TRUE(std::ranges::equal(find_prefix<max_size>(arr, 7), res1));
     EXPECT_TRUE(std::ranges::equal(find_prefix<max_size>(arr, 8), res2));
@@ -169,20 +213,20 @@ TEST(functions_test, FindPrefixTest)
     EXPECT_TRUE(std::ranges::equal(find_prefix<max_size>(arr, 0), res10));
 }
 
-TEST(functions_test, FindPrefixConstexprTest)
+TEST_F(functions_test, FindPrefixConstexprTest)
 {
     constexpr auto arr = make_test_array();
 
-    std::vector res1 = {'a', 'v', 'e', '\0'};
-    std::vector res2 = {'a', 'b', 'c', '\0'};
-    std::vector res3 = {'a', 'b', 'd', '\0'};
-    std::vector res4 = {'c', 'v', '\0'};
-    std::vector res5 = {'a', 'v', '\0'};
-    std::vector res6 = {'a', 'b', '\0'};
-    std::vector res7 = {'b', '\0'};
-    std::vector res8 = {'c', '\0'};
-    std::vector res9 = {'a', '\0'};
-    std::vector res10 = {'\0'};
+    std::vector res1 = {'a', 'b', 'c'};
+    std::vector res2 = {'a', 'b', 'd'};
+    std::vector res3 = {'a', 'v', 'e'};
+    std::vector res4 = {'c', 'v'};
+    std::vector res5 = {'a', 'b'};
+    std::vector res6 = {'a', 'v'};
+    std::vector res7 = {'b'};
+    std::vector res8 = {'c'};
+    std::vector res9 = {'a'};
+    std::vector<char> res10 = {};
 
     constexpr auto pref1 = find_prefix<max_size>(arr, 7);
     constexpr auto pref2 = find_prefix<max_size>(arr, 8);
@@ -205,4 +249,67 @@ TEST(functions_test, FindPrefixConstexprTest)
     EXPECT_TRUE(std::equal(pref8.begin(), pref8.end(), res8.begin(), res8.end()));
     EXPECT_TRUE(std::equal(pref9.begin(), pref9.end(), res9.begin(), res9.end()));
     EXPECT_TRUE(std::equal(pref10.begin(), pref10.end(), res10.begin(), res10.end()));
+}
+
+std::ostream& operator<<(std::ostream& out, const test_node& node)
+{
+    return out << '{' << node.left << ", " << node.right << ", " << node.value << ", \'" << node.character << "\'}";
+}
+
+TEST_F(functions_test, CreateStorageTest)
+{
+    auto arr = make_test_array();
+    auto res = create_storage<test_node, node_number, max_size>(make_keys(), make_values());
+
+    EXPECT_EQ(std::size(arr), std::size(res));
+
+    auto res_it = std::begin(res);
+    for(auto arr_it = std::begin(arr); arr_it != std::end(arr); ++arr_it, ++res_it)
+	EXPECT_EQ(*arr_it, *res_it);
+
+
+    auto arr2 = make_intersect_test_array();
+    auto res2 = create_storage<test_node, node_number, max_size>(make_intersect_keys(), make_intersect_values());
+
+    EXPECT_EQ(std::size(arr2), std::size(res2));
+
+    auto res2_it = std::begin(res2);
+    for(auto arr2_it = std::begin(arr2); arr2_it != std::end(arr2); ++arr2_it, ++res2_it)
+	EXPECT_EQ(*arr2_it, *res2_it);
+
+
+    auto arr3 = std::array<test_node, 1>{{1, 1, 0, '\0'}};
+    auto res3 = create_storage<test_node, 1, 1>(std::array<std::string_view, 1>{""}, std::array<int, 1>{1});
+    
+    EXPECT_EQ(std::size(arr3), std::size(res3));
+    EXPECT_EQ(arr3.front(), res3.front());
+}
+
+TEST_F(functions_test, CreateStorageConstexprTest)
+{
+    constexpr auto arr = make_test_array();
+    constexpr auto res = create_storage<test_node, node_number, max_size>(make_keys(), make_values());
+
+    EXPECT_EQ(std::size(arr), std::size(res));
+
+    auto res_it = std::begin(res);
+    for(auto arr_it = std::begin(arr); arr_it != std::end(arr); ++arr_it, ++res_it)
+	EXPECT_EQ(*arr_it, *res_it);
+
+
+    constexpr auto arr2 = make_intersect_test_array();
+    constexpr auto res2 = create_storage<test_node, node_number, max_size>(make_intersect_keys(), make_intersect_values());
+
+    EXPECT_EQ(std::size(arr2), std::size(res2));
+
+    auto res2_it = std::begin(res2);
+    for(auto arr2_it = std::begin(arr2); arr2_it != std::end(arr2); ++arr2_it, ++res2_it)
+	EXPECT_EQ(*arr2_it, *res2_it);
+
+
+    constexpr auto arr3 = std::array<test_node, 1>{{1, 1, 0, '\0'}};
+    auto res3 = create_storage<test_node, 1, 1>(std::array<std::string_view, 1>{""}, std::array<int, 1>{1});
+    
+    EXPECT_EQ(std::size(arr3), std::size(res3));
+    EXPECT_EQ(arr3.front(), res3.front());
 }

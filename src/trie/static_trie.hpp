@@ -39,7 +39,7 @@ namespace trie
 	constexpr static_trie(const keys_t& keys, const values_t& values) 
 	    : values{values}
 	{
-	    storage = trie::static_trie_auxiliary::functions::create_storage<node, node_number, max_size>(keys, values);
+	    //storage = trie::static_trie_auxiliary::functions::create_storage<node, node_number, max_size>(keys, values);
 	}
 
 	bool contains(key_t&& key) const noexcept
