@@ -15,6 +15,7 @@ file(GLOB_RECURSE TESTS LIST_DIRECTORIES false ${PROJECT_SOURCE_DIR}/test/*)
 
 add_executable(${TEST_EXECUTABLE} ${TESTS})
 add_executable(demo src/demo.cpp)
+add_executable(static_demo src/static_demo.cpp)
 
 target_include_directories(${TEST_EXECUTABLE} PUBLIC GTEST_INCLUDE_DIRS PUBLIC ${PROJECT_SOURCE_DIR}/src/)
 target_link_libraries(${TEST_EXECUTABLE} GTest::gtest_main)
