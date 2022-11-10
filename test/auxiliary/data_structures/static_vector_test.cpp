@@ -141,15 +141,36 @@ TEST_F(static_vector_test, SwapTest)
     EXPECT_EQ(s.size(), 4);
     EXPECT_EQ(s2.size(), 2);
 
-    EXPECT_TRUE(std::equal(s.begin(), s.end(), v.begin(), v.end()));
-    EXPECT_FALSE(std::equal(s2.begin(), s2.end(), v.begin(), v.end()));
+    EXPECT_EQ(s, v);
+    EXPECT_NE(s2, v);
 
     s.swap(s2);
 
     EXPECT_EQ(s.size(), 2);
     EXPECT_EQ(s2.size(), 4);
 
-    EXPECT_FALSE(std::equal(s.begin(), s.end(), v.begin(), v.end()));
-    EXPECT_TRUE(std::equal(s2.begin(), s2.end(), v.begin(), v.end()));
+    EXPECT_NE(s, v);
+    EXPECT_EQ(s2, v);
 
+}
+
+TEST_F(static_vector_test, EraseTest)
+{
+    static_vector<int, 5> v;
+    for(int i = 1; i <= v.capacity(); ++i)
+	v.emplace_back(i);
+
+    EXPECT_EQ(v, (std::vector{1, 2, 3, 4, 5}));
+    
+    auto new_end = v.begin() + 2;
+    EXPECT_EQ(v.erase(v.begin() + 1), new_end);
+    EXPECT_EQ(v, (std::vector{1, 3, 4, 5}));
+
+    new_end = v.begin() + 3;
+    EXPECT_EQ(v.erase(v.begin() + 3, v.end()), new_end);
+    EXPECT_EQ(v, (std::vector{1, 3, 4}));
+
+    new_end = v.begin() + 2;
+    EXPECT_EQ(v.erase(v.begin() + 1, v.begin() + 2), new_end);
+    EXPECT_EQ(v, (std::vector{1, 4}));
 }

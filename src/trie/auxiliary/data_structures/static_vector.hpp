@@ -4,6 +4,7 @@
 #include <exception>
 #include <stdexcept>
 #include <algorithm>
+#include <concepts>
 
 namespace static_structures 
 {
@@ -80,6 +81,7 @@ namespace static_structures
 
 	template<typename... Args>
 	constexpr void emplace_back(Args&&... args)
+	requires std::constructible_from<value_type, Args...>
 	{
 	    auto* ptr = &container.at(_size);
 	    std::construct_at(ptr, std::forward<Args>(args)...);
@@ -109,7 +111,12 @@ namespace static_structures
 	{
 	    if(!(this->begin() <= pos && pos < this->end()))
 		return this->end();
-	    std::ranges::copy(pos + 1, this->end(), pos);
+
+	    if constexpr(std::movable<value_type>)
+		std::ranges::move(pos + 1, this->end(), pos);
+	    else
+		std::ranges::copy(pos + 1, this->end(), pos);
+
 	    --_size;
 	    return pos + 1;
 	}
@@ -118,11 +125,17 @@ namespace static_structures
 	{
 	    if(!(this->begin() <= left && right <= this->end()))
 		return end();
+
 	    auto old_end = this->end();
 	    _size -= (right - left);
+
 	    if(right == old_end)
 		return this->end();
-	    return std::ranges::copy(right + 1, old_end, left).out;
+
+	    if constexpr(std::movable<value_type>)
+		return std::ranges::move(right, old_end, left).out;
+	    else
+		return std::ranges::copy(right, old_end, left).out;
 	}
 
 
@@ -149,6 +162,13 @@ namespace static_structures
 	constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
 
 	constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+
+
+	template<std::ranges::input_range Range>
+	constexpr bool operator==(const Range& range) const 
+	{
+	    return std::ranges::equal(*this, range);
+	}
 
     };
 
