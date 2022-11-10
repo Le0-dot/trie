@@ -16,12 +16,12 @@ namespace trie::static_trie_auxiliary::functions
     namespace 
     {
 
-	using trie::concepts::sizable;
-	using trie::concepts::is_trie_node;
-	using trie::concepts::is_string;
+	using ::trie::concepts::sizable;
+	using ::trie::concepts::is_trie_node;
+	using ::trie::concepts::is_string;
 
-	using trie::helpers::starts_with;
-	using trie::helpers::index_of;
+	using ::trie::helpers::starts_with;
+	using ::trie::helpers::index_of;
 
 	using static_structures::static_vector;
 	using static_structures::static_stack;
