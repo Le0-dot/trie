@@ -41,15 +41,12 @@ namespace trie
 	    , storage{::trie::static_trie_auxiliary::functions::create_storage<node, node_number, max_size>(keys, values)}
 	{}
 
-	bool contains(key_t&& key) const noexcept
+	constexpr bool contains(key_t&& key) const noexcept
 	{
-	    if(key == "")
-		return true;
-	    
 	    auto node = std::begin(storage);
 	    for(const auto& ch: key) {
 		std::ranges::subrange current_range{std::begin(storage) + node->left, std::begin(storage) + node->right};
-		static constexpr auto proj = [] (const static_trie::node& n) { return n.character; };
+		constexpr auto proj = [] (const static_trie::node& n) { return n.character; };
 
 		node = std::ranges::find(current_range, ch, proj);
 		if(node == std::end(current_range))
@@ -59,45 +56,35 @@ namespace trie
 	    return node->value != std::size(values);
 	}
 
-	const T& get(key_t&& key) const
+	constexpr const T& get(key_t&& key) const
 	{
-	    auto node = std::begin(storage);
-	    if(key == "" && node->value != std::size(values))
-		return values[node->value];
-	    
-	    for(const auto& ch: key) {
-		std::ranges::subrange current_range{std::begin(storage) + node->left, std::begin(storage) + node->right};
-		static constexpr auto proj = [] (const static_trie::node& n) { return n.character; };
-
-		node = std::ranges::find(current_range, ch, proj);
-		if(node == std::end(current_range))
-		    throw std::invalid_argument{"No such key"};
-	    }
-
-	    if(node->value == std::size(values))
-		throw std::invalid_argument{"No such key"};
-
-	    return values[node->value];
+	    const auto desired = iterate_to(key);
+	    return values.at(desired->value);
 	}
 
-	std::vector<std::string> get_all(key_t&& prefix) const
+	constexpr std::vector<std::string> get_all(key_t&& prefix) const
 	{
-	    auto node = std::begin(storage);
-	    for(const auto& ch: prefix) {
-		std::ranges::subrange current_range{std::begin(storage) + node->left, std::begin(storage) + node->right};
-		static constexpr auto proj = [] (const static_trie::node& n) { return n.character; };
-
-		node = std::ranges::find(current_range, ch, proj);
-		if(node == std::end(current_range))
-		    throw std::invalid_argument{"No such key"};
-	    }
-
+	    const auto local_root = iterate_to(prefix);
 	    std::vector<std::string> result;
-	    get_all_helper(std::string{prefix}, *node, result);
+	    get_all_helper(std::string{prefix}, *local_root, result);
 	    return result;
 	}
 
     private:
+	constexpr auto iterate_to(const key_t& desired) const
+	{
+	    auto node = std::begin(storage);
+	    for(const auto& ch: desired) {
+		std::ranges::subrange current_range{std::begin(storage) + node->left, std::begin(storage) + node->right};
+		constexpr auto proj = [] (const static_trie::node& n) { return n.character; };
+
+		node = std::ranges::find(current_range, ch, proj);
+		if(node == std::end(current_range))
+		    throw std::invalid_argument{"No such key"};
+	    }
+	    return node;
+	}
+	
 	void get_all_helper(std::string&& prefix, const node& current, std::vector<std::string>& result) const
 	{
 	    if(current.value != N)
