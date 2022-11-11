@@ -52,7 +52,7 @@ namespace trie::static_trie_auxiliary::functions
 
 
     template<std::ranges::forward_range Range>
-    [[nodiscard]] constexpr std::size_t max_length(Range&& range)
+    [[nodiscard]] constexpr std::size_t max_length(const Range& range)
     requires sizable<std::ranges::range_value_t<Range>>
     {
 	if(!std::size(range))
@@ -96,15 +96,6 @@ namespace trie::static_trie_auxiliary::functions
 	return counter;
     }
     
-template<typename T, std::size_t N>
-std::ostream& operator<<(std::ostream& out, const static_structures::static_vector<T, N>& v)
-{
-    for(const auto& it: v)
-	out << it;
-    return out;
-}
-
-
     template<typename Node, std::size_t NodeNumber, std::size_t MaxLength,
 	std::ranges::forward_range KeyRange, std::ranges::forward_range ValueRange>
     [[nodiscard]] constexpr auto create_storage(const KeyRange& keys, const ValueRange& values)

@@ -8,6 +8,8 @@ find_package(benchmark REQUIRED)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CXX_FLAGS "-fconstexpr-ops-limit=4294967296")
+
 enable_testing()
 
 set(TEST_EXECUTABLE tests)
