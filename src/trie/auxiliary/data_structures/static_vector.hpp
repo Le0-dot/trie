@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <concepts>
+#include <type_traits>
 
 namespace static_structures 
 {
@@ -19,6 +20,7 @@ namespace static_structures
 	using reference = value_type&;
 	using const_reference = const value_type&;
 	using rvalue_reference = value_type&&;
+	using pointer = value_type*;
 	using iterator = typename std::array<T, N>::iterator;
 	using const_iterator = typename std::array<T, N>::const_iterator;
 	using reverse_iterator = typename std::array<T, N>::reverse_iterator;
@@ -29,7 +31,7 @@ namespace static_structures
 	std::size_t _size{0};
 
     public:
-	constexpr const T& at(size_type i) const
+	constexpr const_reference at(size_type i) const
 	{
 	    if(i < _size)
 		return container.at(i);
@@ -37,13 +39,23 @@ namespace static_structures
 		throw std::out_of_range{"static_vector: out of bound"};
 	}
 
-	constexpr const T& operator[](size_type i) const noexcept { return container[i]; }
+	constexpr const_reference operator[](size_type i) const noexcept { return container[i]; }
 
-	constexpr const T& front() const { return this->at(0); }
+	constexpr const_reference front() const 
+	{ 
+	    if(std::is_constant_evaluated())
+		return (*this)[0];
+	    return this->at(0); 
+	}
 
-	constexpr const T& back() const { return this->at(_size - 1); }
+	constexpr const_reference back() const 
+	{ 
+	    if(std::is_constant_evaluated())
+		return (*this)[_size - 1];
+	    return this->at(_size - 1); 
+	}
 
-	constexpr T& at(size_type i)
+	constexpr reference at(size_type i)
 	{
 	    if(i < _size)
 		return container.at(i);
@@ -51,11 +63,21 @@ namespace static_structures
 		throw std::out_of_range{"static_vector: out of bound"};
 	}
 
-	constexpr T& operator[](size_type i) noexcept { return container[i]; }
+	constexpr reference operator[](size_type i) noexcept { return container[i]; }
 
-	constexpr T& front() { return this->at(0); }
+	constexpr reference front() 
+	{ 
+	    if(std::is_constant_evaluated())
+		return (*this)[0];
+	    return this->at(0); 
+	}
 
-	constexpr T& back() { return this->at(_size - 1); }
+	constexpr reference back() 
+	{ 
+	    if(std::is_constant_evaluated())
+		return (*this)[_size - 1];
+	    return this->at(_size - 1); 
+	}
 
 
 	constexpr size_type size() const noexcept { return _size; }
@@ -69,13 +91,19 @@ namespace static_structures
 
 	constexpr void push_back(const_reference v) 
 	{ 
-	    container.at(_size) = v;
+	    if(std::is_constant_evaluated())
+		container[_size] = v;
+	    else
+		container.at(_size) = v;
 	    ++_size;
 	}
 
 	constexpr void push_back(rvalue_reference v)
 	{
-	    container.at(_size) = std::move(v);
+	    if(std::is_constant_evaluated())
+		container[_size] = std::move(v);
+	    else
+		container.at(_size) = std::move(v);
 	    ++_size;
 	}
 
@@ -83,7 +111,11 @@ namespace static_structures
 	constexpr void emplace_back(Args&&... args)
 	requires std::constructible_from<value_type, Args...>
 	{
-	    auto* ptr = &container.at(_size);
+	    pointer ptr;
+	    if(std::is_constant_evaluated())
+		ptr = &container[_size];
+	    else
+		ptr = &container.at(_size);
 	    std::construct_at(ptr, std::forward<Args>(args)...);
 	    ++_size;
 	}
