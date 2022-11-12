@@ -2,6 +2,7 @@
 
 #include <array>
 #include <exception>
+#include <initializer_list>
 #include <stdexcept>
 #include <algorithm>
 #include <concepts>
@@ -27,10 +28,40 @@ namespace static_structures
 	using const_reverse_iterator = typename std::array<T, N>::const_reverse_iterator;
 
     private:
-	std::array<T, N> container{};
-	std::size_t _size{0};
+	std::array<T, N> container;
+	std::size_t _size;
 
     public:
+	constexpr static_vector() : container{}, _size{0} {}
+
+	constexpr static_vector(std::initializer_list<T> list)
+	requires std::copyable<T> || std::movable<T>
+	{
+	    if constexpr(std::movable<T>)
+		std::ranges::move(list, std::begin(container));
+	    else
+		std::ranges::copy(list, std::begin(container));
+	    _size = list.size();
+	}
+
+	constexpr static_vector(const static_vector<T, N>& o)
+	requires std::copyable<T>
+	{
+	    std::ranges::copy(o.container, std::begin(container));
+	    _size = o._size;
+	}
+
+	constexpr static_vector(static_vector<T, N>&& o)
+	requires std::copyable<T> || std::movable<T>
+	{
+	    if constexpr(std::movable<T>)
+		std::ranges::move(o.container, std::begin(container));
+	    else
+		std::ranges::copy(o.container, std::begin(container));
+	    _size = o._size;
+	}
+
+
 	constexpr const_reference at(size_type i) const
 	{
 	    if(i < _size)

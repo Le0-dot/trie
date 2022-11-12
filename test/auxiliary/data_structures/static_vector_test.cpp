@@ -67,6 +67,32 @@ TEST_F(static_vector_test, AccessTest)
     EXPECT_EQ(s[0], (vector_test_struct{5, 5}));
 }
 
+TEST_F(static_vector_test, ConstexprAccessTest)
+{
+    constexpr static_vector<vector_test_struct, 4> s{{1, 1}, {2, 2}, {3, 3}, {4, 4}};
+    
+    constexpr auto cap = s.capacity();
+    EXPECT_EQ(cap, 4);
+
+    constexpr bool emp = s.empty();
+    EXPECT_FALSE(emp);
+
+    constexpr auto sz = s.size();
+    EXPECT_EQ(sz, 4);
+
+    constexpr auto fr = s.front();
+    EXPECT_EQ(fr, (vector_test_struct{1, 1}));
+
+    constexpr auto bk = s.back();
+    EXPECT_EQ(bk, (vector_test_struct{4, 4}));
+
+    constexpr auto el1 = s[1];
+    EXPECT_EQ(el1, (vector_test_struct{2, 2}));
+
+    constexpr auto el2 = s.at(2);
+    EXPECT_EQ(el2, (vector_test_struct{3, 3}));
+}
+
 TEST_F(static_vector_test, GrowTest)
 {
     const vector_test_struct i = {1, 1};
