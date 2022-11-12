@@ -41,7 +41,7 @@ namespace trie
 	    , storage{::trie::static_trie_auxiliary::functions::create_storage<node, node_number, max_size>(keys, values)}
 	{}
 
-	constexpr bool contains(key_t&& key) const noexcept
+	constexpr bool contains(const key_t& key) const noexcept
 	{
 	    auto node = std::begin(storage);
 	    for(const auto& ch: key) {
@@ -56,13 +56,13 @@ namespace trie
 	    return node->value != std::size(values);
 	}
 
-	constexpr const T& get(key_t&& key) const
+	constexpr const T& get(const key_t& key) const
 	{
 	    const auto desired = iterate_to(key);
 	    return values.at(desired->value);
 	}
 
-	constexpr std::vector<std::string> get_all(key_t&& prefix) const
+	std::vector<std::string> get_all(const key_t& prefix) const
 	{
 	    const auto local_root = iterate_to(prefix);
 	    std::vector<std::string> result;

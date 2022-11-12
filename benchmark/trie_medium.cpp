@@ -15,12 +15,10 @@ namespace
 void BM_MediumTrieCreation(benchmark::State& state) 
 {
     for(auto _ : state) {
-	for(int i = 0; i < state.range(); ++i) {
-		benchmark::DoNotOptimize(trie::trie<int>{
-		    {"alpi", -93}, {"azhgaduvvd", 64}, {"bgjcb", 92}, {"cgh", -86}, {"dlxfzv", -61}, {"ds", -36}, {"ehzcxkzbw", 36}, {"fchvlmrr", 62}, {"fcl", -83}, {"fd", -31}, {"gamo", -82}, {"goyxabgi", -9}, {"henlzr", -79}, {"holsnlelda", -20}, {"huqee", -60}, {"iou", -90}, {"ipmowtgx", -93}, {"jcwjdty", 83}, {"josjiwexrs", 8}, {"jt", 9}, {"jyh", -55}, {"ki", -39}, {"l", 67}, {"lovgsktd", -5}, {"mlm", -69}, {"notstnlep", -43}, {"nporphu", 53}, {"ocxxm", -46}, {"oivqyfkotq", -96}, {"ozw", -28}, {"pfg", 14}, {"pfmvwe", -76}, {"qpsyuqmplm", 50}, {"r", -79}, {"rihmt", -67}, {"rwbxs", 62}, {"sdmuxabnjj", 48}, {"spryzxams", 85}, {"tn", 40}, {"ts", 37}, {"ukowyokz", 2}, {"umvojo", -56}, {"veezytgx", 40}, {"vmjapdl", -9}, {"wsy", -21}, {"wulbvtfoos", -97}, {"wycaop", 16}, {"xrcyfqwn", -25}, {"yjjfffiuu", 2}, {"zgjososbf", 37}
-		});
-		benchmark::ClobberMemory();
-	}
+	benchmark::DoNotOptimize(trie::trie<int>{
+	    {"alpi", -93}, {"azhgaduvvd", 64}, {"bgjcb", 92}, {"cgh", -86}, {"dlxfzv", -61}, {"ds", -36}, {"ehzcxkzbw", 36}, {"fchvlmrr", 62}, {"fcl", -83}, {"fd", -31}, {"gamo", -82}, {"goyxabgi", -9}, {"henlzr", -79}, {"holsnlelda", -20}, {"huqee", -60}, {"iou", -90}, {"ipmowtgx", -93}, {"jcwjdty", 83}, {"josjiwexrs", 8}, {"jt", 9}, {"jyh", -55}, {"ki", -39}, {"l", 67}, {"lovgsktd", -5}, {"mlm", -69}, {"notstnlep", -43}, {"nporphu", 53}, {"ocxxm", -46}, {"oivqyfkotq", -96}, {"ozw", -28}, {"pfg", 14}, {"pfmvwe", -76}, {"qpsyuqmplm", 50}, {"r", -79}, {"rihmt", -67}, {"rwbxs", 62}, {"sdmuxabnjj", 48}, {"spryzxams", 85}, {"tn", 40}, {"ts", 37}, {"ukowyokz", 2}, {"umvojo", -56}, {"veezytgx", 40}, {"vmjapdl", -9}, {"wsy", -21}, {"wulbvtfoos", -97}, {"wycaop", 16}, {"xrcyfqwn", -25}, {"yjjfffiuu", 2}, {"zgjososbf", 37}
+	});
+	benchmark::ClobberMemory();
     }
 }
 
@@ -35,14 +33,10 @@ void BM_MediumTrieContains(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(t.contains(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(t.contains(std::move(desired)));
+	benchmark::ClobberMemory();
     }
 }
 
@@ -65,14 +59,10 @@ void BM_MediumTrieGet(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(t.get(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(t.get(std::move(desired)));
+	benchmark::ClobberMemory();
     }
 }
 
@@ -95,19 +85,15 @@ void BM_MediumTrieGetAll(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(t.get_all(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(t.get_all(std::move(desired)));
+	benchmark::ClobberMemory();
     }
 }
 
 
-BENCHMARK(BM_MediumTrieCreation)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_MediumTrieContains)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_MediumTrieGet)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_MediumTrieGetAll)->RangeMultiplier(10)->Range(1, 1'000);
+BENCHMARK(BM_MediumTrieCreation);
+BENCHMARK(BM_MediumTrieContains);
+BENCHMARK(BM_MediumTrieGet);
+BENCHMARK(BM_MediumTrieGetAll);

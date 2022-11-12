@@ -13,84 +13,57 @@ namespace
     constexpr std::size_t node_number = trie::static_trie_auxiliary::functions::calculate_node_number<max_size>(keys);
 }
 
-void BM_BigStaticTrieCreation(benchmark::State& state) 
+void BM_BigStaticTrieConstexprCreation(benchmark::State& state) 
 {
     for(auto _ : state) {
-	benchmark::DoNotOptimize(trie::static_trie<int, keys.size(), max_size, node_number>{
+	constexpr trie::static_trie<int, keys.size(), max_size, node_number> t{
 		keys, values
-	});
+	};
 	benchmark::ClobberMemory();
     }
 }
 
-void BM_BigStaticTrieContains(benchmark::State& state) 
+void BM_BigStaticTrieConstexprContains(benchmark::State& state) 
 {
     constexpr trie::static_trie<int, keys.size(), max_size, node_number> trie{
 	    keys, values
     };
 
-    auto get_random_element = [] () {
-	static auto gen = std::mt19937{std::random_device{}()};
-	std::array<std::string, 1> res;
-	std::ranges::sample(keys, std::begin(res), 1, gen);
-	return *std::begin(res);
-    };
-
     for(auto _ : state) {
-	state.PauseTiming();
-	auto desired = get_random_element();
-	state.ResumeTiming();
-	benchmark::DoNotOptimize(trie.contains(desired));
+	constexpr auto desired = *std::ranges::next(std::begin(keys), 25);
+	constexpr auto res = trie.contains(desired);
 	benchmark::ClobberMemory();
     }
 }
 
-void BM_BigStaticTrieGet(benchmark::State& state) 
+void BM_BigStaticTrieConstexprGet(benchmark::State& state) 
 {
     constexpr trie::static_trie<int, keys.size(), max_size, node_number> trie{
 	    keys, values
     };
 
-    auto get_random_element = [] () {
-	static auto gen = std::mt19937{std::random_device{}()};
-	std::array<std::string, 1> res;
-	std::ranges::sample(keys, std::begin(res), 1, gen);
-	return *std::begin(res);
-    };
-
     for(auto _ : state) {
-	state.PauseTiming();
-	auto desired = get_random_element();
-	state.ResumeTiming();
-	benchmark::DoNotOptimize(trie.get(desired));
+	constexpr auto desired = *std::ranges::next(std::begin(keys), 25);
+	constexpr auto res = trie.get(desired);
 	benchmark::ClobberMemory();
     }
 }
 
-void BM_BigStaticTrieGetAll(benchmark::State& state) 
-{
-    constexpr trie::static_trie<int, keys.size(), max_size, node_number> trie{
-	    keys, values
-    };
-
-    auto get_random_element = [] () {
-	static auto gen = std::mt19937{std::random_device{}()};
-	std::array<std::string, 1> res;
-	std::ranges::sample(keys, std::begin(res), 1, gen);
-	return *std::begin(res);
-    };
-
-    for(auto _ : state) {
-	state.PauseTiming();
-	auto desired = get_random_element();
-	state.ResumeTiming();
-	benchmark::DoNotOptimize(trie.get_all(desired));
-	benchmark::ClobberMemory();
-    }
-}
+//void BM_BigStaticTrieConstexprGetAll(benchmark::State& state) 
+//{
+//    constexpr trie::static_trie<int, keys.size(), max_size, node_number> trie{
+//	    keys, values
+//    };
+//
+//    for(auto _ : state) {
+//	constexpr auto desired = *std::ranges::next(std::begin(keys), 25);
+//	constexpr auto res = trie.get_all(desired);
+//	benchmark::ClobberMemory();
+//    }
+//}
 
 
-BENCHMARK(BM_BigStaticTrieCreation);
-BENCHMARK(BM_BigStaticTrieContains);
-BENCHMARK(BM_BigStaticTrieGet);
-BENCHMARK(BM_BigStaticTrieGetAll);
+BENCHMARK(BM_BigStaticTrieConstexprCreation);
+BENCHMARK(BM_BigStaticTrieConstexprContains);
+BENCHMARK(BM_BigStaticTrieConstexprGet);
+//BENCHMARK(BM_BigStaticTrieConstexprGetAll);

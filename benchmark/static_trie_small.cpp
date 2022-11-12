@@ -16,24 +16,10 @@ namespace
 void BM_SmallStaticTrieCreation(benchmark::State& state) 
 {
     for(auto _ : state) {
-	for(int i = 0; i < state.range(); ++i) {
-		benchmark::DoNotOptimize(trie::static_trie<int, keys.size(), max_size, node_number>{
-			keys, values
-		});
-		benchmark::ClobberMemory();
-	}
-    }
-}
-
-void BM_SmallStaticTrieConstexprCreation(benchmark::State& state) 
-{
-    for(auto _ : state) {
-	for(int i = 0; i < state.range(); ++i) {
-		constexpr trie::static_trie<int, keys.size(), max_size, node_number> t{
-			keys, values
-		};
-		benchmark::ClobberMemory();
-	}
+	benchmark::DoNotOptimize(trie::static_trie<int, keys.size(), max_size, node_number>{
+		keys, values
+	});
+	benchmark::ClobberMemory();
     }
 }
 
@@ -52,14 +38,10 @@ void BM_SmallStaticTrieContains(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(trie.contains(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(trie.contains(desired));
+	benchmark::ClobberMemory();
     }
 }
 
@@ -78,14 +60,10 @@ void BM_SmallStaticTrieGet(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(trie.get(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(trie.get(desired));
+	benchmark::ClobberMemory();
     }
 }
 
@@ -104,20 +82,15 @@ void BM_SmallStaticTrieGetAll(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(trie.get_all(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(trie.get_all(desired));
+	benchmark::ClobberMemory();
     }
 }
 
 
-BENCHMARK(BM_SmallStaticTrieCreation)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_SmallStaticTrieConstexprCreation)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_SmallStaticTrieContains)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_SmallStaticTrieGet)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_SmallStaticTrieGetAll)->RangeMultiplier(10)->Range(1, 1'000);
+BENCHMARK(BM_SmallStaticTrieCreation);
+BENCHMARK(BM_SmallStaticTrieContains);
+BENCHMARK(BM_SmallStaticTrieGet);
+BENCHMARK(BM_SmallStaticTrieGetAll);

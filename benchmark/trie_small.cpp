@@ -19,18 +19,16 @@ namespace
 void BM_SmallTrieCreation(benchmark::State& state) 
 {
     for(auto _ : state) {
-	for(int i = 0; i < state.range(); ++i) {
-		benchmark::DoNotOptimize(trie::trie<int>{
-		    {"ab", 3},
-		    {"abc", 6},
-		    {"abd", -4},
-		    {"ave", 9},
-		    {"b", -7},
-		    {"c", 1},
-		    {"cv", -2}
-		});
-		benchmark::ClobberMemory();
-	}
+	benchmark::DoNotOptimize(trie::trie<int>{
+	    {"ab", 3},
+	    {"abc", 6},
+	    {"abd", -4},
+	    {"ave", 9},
+	    {"b", -7},
+	    {"c", 1},
+	    {"cv", -2}
+	});
+	benchmark::ClobberMemory();
     }
 }
 
@@ -45,14 +43,10 @@ void BM_SmallTrieContains(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(t.contains(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(t.contains(std::move(desired)));
+	benchmark::ClobberMemory();
     }
 }
 
@@ -67,14 +61,10 @@ void BM_SmallTrieGet(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(t.get(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(t.get(std::move(desired)));
+	benchmark::ClobberMemory();
     }
 }
 
@@ -89,19 +79,15 @@ void BM_SmallTrieGetAll(benchmark::State& state)
 
     for(auto _ : state) {
 	state.PauseTiming();
-	for(int i = 0; i < state.range(); ++i) {
-	    auto desired = get_random_element();
-	    state.ResumeTiming();
-	    benchmark::DoNotOptimize(t.get_all(std::move(desired)));
-	    benchmark::ClobberMemory();
-	    state.PauseTiming();
-	}
+	auto desired = get_random_element();
 	state.ResumeTiming();
+	benchmark::DoNotOptimize(t.get_all(std::move(desired)));
+	benchmark::ClobberMemory();
     }
 }
 
 
-BENCHMARK(BM_SmallTrieCreation)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_SmallTrieContains)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_SmallTrieGet)->RangeMultiplier(10)->Range(1, 1'000);
-BENCHMARK(BM_SmallTrieGetAll)->RangeMultiplier(10)->Range(1, 1'000);
+BENCHMARK(BM_SmallTrieCreation);
+BENCHMARK(BM_SmallTrieContains);
+BENCHMARK(BM_SmallTrieGet);
+BENCHMARK(BM_SmallTrieGetAll);

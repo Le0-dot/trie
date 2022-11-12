@@ -118,7 +118,7 @@ namespace trie::static_trie_auxiliary::functions
 	++node;
 
 	// Current and next level iterators
-	auto iteration_left = std::begin(storage), iteration_right = std::ranges::next(begin(storage));
+	auto iteration_left = std::begin(storage), iteration_right = std::ranges::next(std::begin(storage));
 	auto next_iteration_left = iteration_right, next_iteration_right = next_iteration_left;
 
 	for(std::size_t level = 0; level < MaxLength; ++level) {
