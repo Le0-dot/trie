@@ -13,8 +13,8 @@ Versions on which project was originaly built and tested will be listed in paren
   - [google's gtest](https://github.com/google/googletest)
   - [google's benchmark](https://github.com/google/benchmark)
 - python 3 (python 3.10)
-  - numpy (numpy 1.23)
-  - matplotlib (matplotlib 3.6)
+  - [numpy](https://numpy.org/) (numpy 1.23)
+  - [matplotlib](https://matplotlib.org/) (matplotlib 3.6)
 
 ### Installation of c++ libraries
 ##### Ubuntu
@@ -49,7 +49,7 @@ There are 2 demos, that shows how to use trie and static trie respectfully
 
 To run them use ```./bin/Release/demo``` and ```./bin/Release/static_demo```.
 ### Benchmarks
-Project uses [google's Benchmark library](https://github.com/google/benchmark) of benchmarking
+Project uses [google's Benchmark library](https://github.com/google/benchmark) for benchmarking
 
 To run benchmarks use ```./bin/Release/benchmarks```.
 
