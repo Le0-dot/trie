@@ -13,6 +13,7 @@ def draw(title, *data) -> None:
     ax.set_xlabel('Data size')
     ax.set_ylabel('nanoseconds')
     ax.legend()
+    ax.grid(True)
     plt.show()
 
 def draw_creation_graph(json_data: dict) -> None:

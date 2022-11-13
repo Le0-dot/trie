@@ -5,10 +5,14 @@ project(trie)
 find_package(GTest REQUIRED)
 find_package(benchmark REQUIRED)
 
+set(CMAKE_CXX_COMPILER g++)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "-fconstexpr-ops-limit=4294967296")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
 
 enable_testing()
 
